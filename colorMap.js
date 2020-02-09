@@ -377,10 +377,11 @@ class ColorMap {
         this.setCirclePos();
         this.setSliderLinePos();
         this.draw();
+        this.textbox.value = this.hsvToRgb().substring(1);
     }
 
     getColor() {
-        return this.hsvToRgb(this.hsv.h, this.hsv.s, this.hsv.v);
+        return this.hsvToRgb();
     }
 
     hsvToRgb(h = this.hsv.h, s = this.hsv.s, v = this.hsv.v) {
