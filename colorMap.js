@@ -47,6 +47,7 @@ class ColorMap {
             top: undefined,
             color: undefined //? rgb or hsv?
         };
+        this.windowEvents = [];
         //setting the dimensions of the visual components
         this.margin = 2;
         this.setTextBoxDimensions(width);
@@ -264,14 +265,30 @@ class ColorMap {
     }
 
     addWindowEvent() {
-        window.onmousedown = (e) => {
-            if (e.target.id !== this.body.id &&
-                e.target.id !== this.canvas.id &&
-                e.target.id !== this.textbox.id) {
-                this.canvas.style.display = "none";
-                this.canMoveCircle = this.canMoveSlider = false;
+        let t = this;
+        function eventFunc(e) {
+            if (e.target.id !== t.body.id &&
+                e.target.id !== t.canvas.id &&
+                e.target.id !== t.textbox.id) {
+                t.canvas.style.display = "none";
+                t.canMoveCircle = t.canMoveSlider = false;
             }
-        };
+        }
+        this.windowEvents.push(eventFunc);
+        if (window.onmousedown) {
+            this.windowEvents.push(window.onmousedown);
+        }
+        if (window.ontouchstart) {
+            this.windowEvents.push(window.ontouchstart);
+        }
+        window.onmousedown = (e) => this.iterateEvents(e, this);
+        window.ontouchstart = (e) => this.iterateEvents(e, this);
+    }
+
+    iterateEvents(e, target) {
+        target.windowEvents.map((eventFunc) => {
+            eventFunc(e);
+        });
     }
 
     addColorMapEvents() {
